@@ -25,11 +25,15 @@ CREATE TABLE IF NOT EXISTS students (
 
 CREATE TABLE IF NOT EXISTS teachers (
    id INT PRIMARY KEY AUTO_INCREMENT,
+   teacherId VARCHAR(50) NOT NULL,
+   teacherName VARCHAR(100) NOT NULL,
+   subject VARCHAR(100) NOT NULL,
    user_id INT,
    department VARCHAR(100),
    qualification VARCHAR(100),
    FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
 );
+
 
 CREATE TABLE IF NOT EXISTS classes (
    id INT PRIMARY KEY AUTO_INCREMENT,

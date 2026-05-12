@@ -8,8 +8,10 @@ import Register from './pages/Register';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import Students from './pages/admin/Students';
 import TeacherDashboard from './pages/teacher/TeacherDashboard';
+import TeacherProfile from './pages/teacher/TeacherProfile';
 import StudentDashboard from './pages/student/StudentDashboard';
 import StudentProfile from './pages/student/StudentProfile';
+import Teachers from './pages/admin/Teachers';
 
 const Unauthorized = () => <div className="flex h-screen items-center justify-center text-red-500 font-bold bg-red-50 text-2xl">Unauthorized Access</div>;
 
@@ -42,6 +44,7 @@ function App() {
               </ProtectedRoute>
             }>
               <Route path="students" element={<Students />} />
+              <Route path="teachers" element={<Teachers />} />
             </Route>
 
             {/* Teacher Base */}
@@ -49,7 +52,10 @@ function App() {
               <ProtectedRoute roles={['teacher']}>
                 <TeacherDashboard />
               </ProtectedRoute>
-            } />
+            }>
+              <Route path="profile" element={<TeacherProfile />} />
+              <Route path="manage-teachers" element={<Teachers />} />
+            </Route>
 
             {/* Student Base */}
             <Route path="/student" element={

@@ -1,9 +1,28 @@
+import React, { useState, useEffect } from 'react';
 import { Link, Outlet } from 'react-router-dom';
 import { Users, BookOpen, Clock, Settings, GraduationCap, DollarSign, Bell, LayoutDashboard } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-
+import api from '../../services/api';
 const AdminDashboard = () => {
     const { user, logout } = useAuth();
+    const [stats, setStats] = useState({
+        totalStudents: 0,
+        totalTeachers: 0,
+        activeClasses: 0,
+        feesCollected: 0
+    });
+
+    useEffect(() => {
+        const fetchStats = async () => {
+            try {
+                const res = await api.get('/admin/stats');
+                setStats(res.data.stats);
+            } catch (err) {
+                console.error("Failed to fetch dashboard stats", err);
+            }
+        };
+        fetchStats();
+    }, []);
 
     return (
         <div className="flex h-screen bg-gray-50">
@@ -16,7 +35,7 @@ const AdminDashboard = () => {
                 <nav className="flex-1 p-4 space-y-2">
                     <Link to="/admin" className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 text-gray-600 rounded-xl font-medium transition-colors"><LayoutDashboard size={20} /> Dashboard</Link>
                     <Link to="/admin/students" className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-xl transition-colors"><Users size={20} /> Students</Link>
-                    <a href="#" className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-xl transition-colors"><BookOpen size={20} /> Teachers</a>
+                    <Link to="/admin/teachers" className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-xl transition-colors"><BookOpen size={20} /> Teachers</Link>
                     <a href="#" className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-xl transition-colors"><Clock size={20} /> Classes</a>
                     <a href="#" className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-xl transition-colors"><DollarSign size={20} /> Fees</a>
                     <a href="#" className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-xl transition-colors"><Bell size={20} /> Announcements</a>
@@ -45,20 +64,20 @@ const AdminDashboard = () => {
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                                 <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
                                     <div className="flex items-center justify-between"><h3 className="text-gray-500 font-medium">Total Students</h3><Users className="text-blue-500" /></div>
-                                    <p className="text-3xl font-bold text-gray-800 mt-2">1,245</p>
+                                    <p className="text-3xl font-bold text-gray-800 mt-2">{stats.totalStudents}</p>
                                     <span className="text-sm text-green-500 font-medium">+12 this month</span>
                                 </div>
                                 <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
                                     <div className="flex items-center justify-between"><h3 className="text-gray-500 font-medium">Total Teachers</h3><BookOpen className="text-purple-500" /></div>
-                                    <p className="text-3xl font-bold text-gray-800 mt-2">86</p>
+                                    <p className="text-3xl font-bold text-gray-800 mt-2">{stats.totalTeachers}</p>
                                 </div>
                                 <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
                                     <div className="flex items-center justify-between"><h3 className="text-gray-500 font-medium">Active Classes</h3><Clock className="text-amber-500" /></div>
-                                    <p className="text-3xl font-bold text-gray-800 mt-2">42</p>
+                                    <p className="text-3xl font-bold text-gray-800 mt-2">{stats.activeClasses}</p>
                                 </div>
                                 <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
                                     <div className="flex items-center justify-between"><h3 className="text-gray-500 font-medium">Fees Collected</h3><DollarSign className="text-green-500" /></div>
-                                    <p className="text-3xl font-bold text-gray-800 mt-2">$24.5k</p>
+                                    <p className="text-3xl font-bold text-gray-800 mt-2">${stats.feesCollected}</p>
                                 </div>
                             </div>
                         </div>

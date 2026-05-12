@@ -19,6 +19,9 @@ app.get('/api/health', (req, res) => {
 app.use('/api/auth', require('./routes/auth.routes'));
 app.use('/api/admissions', require('./routes/admission.routes'));
 app.use('/api/students', require('./routes/student.routes'));
+app.use('/api/teachers', require('./routes/teacher.routes'));
+app.use('/api/admin', require('./routes/dashboard.routes'));
+
 
 // Global Error Middleware
 app.use((err, req, res, next) => {
