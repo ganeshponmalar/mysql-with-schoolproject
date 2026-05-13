@@ -1,5 +1,5 @@
 import React from 'react';
-import { Calendar, CheckCircle, FileText, Activity, User } from 'lucide-react';
+import { Calendar, CheckCircle, FileText, Activity, User, Bell, DollarSign } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { Link, Outlet } from 'react-router-dom';
 
@@ -16,6 +16,8 @@ const TeacherDashboard = () => {
                     <Link to="/teacher" className="flex items-center gap-3 px-4 py-3 bg-secondary bg-opacity-10 text-secondary rounded-xl font-medium"><Activity size={20} /> Overview</Link>
                     <Link to="/teacher/profile" className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-xl"><User size={20} /> Profile</Link>
                     <Link to="/teacher/manage-teachers" className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-xl"><FileText size={20} /> Manage Teachers</Link>
+                    <Link to="/teacher/notifications" className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-xl"><Bell size={20} /> Notifications</Link>
+                    <Link to="/teacher/fees" className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-xl"><DollarSign size={20} /> Manage Fees</Link>
                     <a href="#" className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-xl"><CheckCircle size={20} /> Attendance</a>
                 </nav>
                 <div className="p-4 border-t">

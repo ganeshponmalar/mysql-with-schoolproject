@@ -17,6 +17,12 @@ exports.createStudent = errorHandler(async (req, res, next) => {
         return next(new ErrorHandler("Please provide all required fields", 400));
     }
 
+    // New: Check if userId exists in users table
+    const [userExists] = await db.query("SELECT id FROM users WHERE id = ?", [userId]);
+    if (userExists.length === 0) {
+        return next(new ErrorHandler(`User ID ${userId} not found in database. Student must be a registered user first.`, 404));
+    }
+
     // check duplicate roll number in same section
     const [existingStudent] = await db.query(
         "SELECT id FROM students WHERE section = ? AND rollNumber = ?",

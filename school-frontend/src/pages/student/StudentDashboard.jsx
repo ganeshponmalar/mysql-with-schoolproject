@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
-import { Book, Award, Clock, DollarSign, CheckCircle, User, Users } from 'lucide-react';
+import { Book, Award, Clock, DollarSign, CheckCircle, User, Users, Bell } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
 const StudentDashboard = () => {
@@ -29,6 +29,12 @@ const StudentDashboard = () => {
                         </Link>
                         <Link to="/student/profile" className={`px-5 py-2 rounded-xl transition-all font-bold flex items-center gap-2 ${location.pathname === '/student/profile' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200' : 'bg-indigo-50 text-indigo-600 hover:bg-indigo-100'}`}>
                             <User size={18} /> My Profile
+                        </Link>
+                        <Link to="/student/notifications" className={`px-5 py-2 rounded-xl transition-all font-bold flex items-center gap-2 ${location.pathname === '/student/notifications' ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'bg-gray-50 text-gray-600 hover:bg-gray-100'}`}>
+                            <Bell size={18} /> Notifications
+                        </Link>
+                        <Link to="/student/fee-board" className={`px-5 py-2 rounded-xl transition-all font-bold flex items-center gap-2 ${location.pathname === '/student/fee-board' ? 'bg-green-600 text-white shadow-lg shadow-green-200' : 'bg-green-50 text-green-600 hover:bg-green-100'}`}>
+                            <DollarSign size={18} /> Student Notification Board
                         </Link>
                         <button onClick={logout} className="px-5 py-2 bg-gray-100 hover:bg-red-50 text-gray-700 hover:text-red-600 rounded-xl transition-all font-bold">Sign out</button>
                     </div>

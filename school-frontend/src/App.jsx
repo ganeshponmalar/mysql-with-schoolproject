@@ -12,6 +12,10 @@ import TeacherProfile from './pages/teacher/TeacherProfile';
 import StudentDashboard from './pages/student/StudentDashboard';
 import StudentProfile from './pages/student/StudentProfile';
 import Teachers from './pages/admin/Teachers';
+import SendNotification from './pages/teacher/SendNotification';
+import StudentNotifications from './pages/student/StudentNotifications';
+import ManageFees from './pages/teacher/ManageFees';
+import StudentFeeBoard from './pages/student/StudentFeeBoard';
 
 const Unauthorized = () => <div className="flex h-screen items-center justify-center text-red-500 font-bold bg-red-50 text-2xl">Unauthorized Access</div>;
 
@@ -55,6 +59,8 @@ function App() {
             }>
               <Route path="profile" element={<TeacherProfile />} />
               <Route path="manage-teachers" element={<Teachers />} />
+              <Route path="notifications" element={<SendNotification />} />
+              <Route path="fees" element={<ManageFees />} />
             </Route>
 
             {/* Student Base */}
@@ -65,6 +71,8 @@ function App() {
             }>
               <Route path="profile" element={<StudentProfile />} />
               <Route path="manage-students" element={<Students />} />
+              <Route path="notifications" element={<StudentNotifications />} />
+              <Route path="fee-board" element={<StudentFeeBoard />} />
             </Route>
           </Routes>
         </div>
