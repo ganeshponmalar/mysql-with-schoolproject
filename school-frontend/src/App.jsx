@@ -49,6 +49,7 @@ function App() {
             }>
               <Route path="students" element={<Students />} />
               <Route path="teachers" element={<Teachers />} />
+              <Route path="notifications" element={<SendNotification />} />
             </Route>
 
             {/* Teacher Base */}

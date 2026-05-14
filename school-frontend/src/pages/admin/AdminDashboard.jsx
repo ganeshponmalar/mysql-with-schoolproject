@@ -38,7 +38,7 @@ const AdminDashboard = () => {
                     <Link to="/admin/teachers" className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-xl transition-colors"><BookOpen size={20} /> Teachers</Link>
                     <a href="#" className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-xl transition-colors"><Clock size={20} /> Classes</a>
                     <a href="#" className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-xl transition-colors"><DollarSign size={20} /> Fees</a>
-                    <a href="#" className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-xl transition-colors"><Bell size={20} /> Announcements</a>
+                    <Link to="/admin/notifications" className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-xl transition-colors"><Bell size={20} /> Announcements</Link>
                 </nav>
                 <div className="p-4 border-t">
                     <button onClick={logout} className="w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors">Sign Out</button>

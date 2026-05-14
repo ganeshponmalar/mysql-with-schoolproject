@@ -71,6 +71,10 @@ const StudentFeeBoard = () => {
                         >
                             <div className="flex flex-col md:flex-row divide-y md:divide-y-0 md:divide-x divide-gray-100">
                                 <div className="p-8 md:w-1/3 bg-gray-50/50 flex flex-col justify-center">
+                                    <div className="flex items-center gap-2 mb-2">
+                                        <span className="bg-primary/10 text-primary px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider">#{fee.rollNumber}</span>
+                                        <span className="bg-indigo-100 text-indigo-600 px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider">Sec {fee.section}</span>
+                                    </div>
                                     <p className="text-sm font-black text-gray-400 uppercase tracking-widest mb-1">Total Due</p>
                                     <p className="text-5xl font-black text-primary tracking-tighter flex items-center gap-1">
                                         <span className="text-3xl opacity-50">$</span>{fee.amount}
@@ -97,7 +101,7 @@ const StudentFeeBoard = () => {
                                     </div>
                                     <div className="flex flex-col justify-between items-start sm:items-end">
                                         <span className={`px-6 py-2 rounded-2xl text-xs font-black uppercase tracking-[0.2em] shadow-sm ${fee.status === 'paid' ? 'bg-green-500 text-white' :
-                                                fee.status === 'overdue' ? 'bg-red-500 text-white animate-pulse' : 'bg-amber-400 text-white'
+                                            fee.status === 'overdue' ? 'bg-red-500 text-white animate-pulse' : 'bg-amber-400 text-white'
                                             }`}>
                                             {fee.status}
                                         </span>

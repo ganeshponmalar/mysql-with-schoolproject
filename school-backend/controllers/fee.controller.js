@@ -83,25 +83,35 @@ const getAllFees = async (req, res, next) => {
     }
 };
 
-// GET STUDENT FEES (Personal)
+// GET STUDENT FEES (Personal - multiple records support)
 const getMyFees = async (req, res, next) => {
     try {
         const userId = req.user.id;
 
-        // Find the student record associated with this user
-        const [[student]] = await db.query("SELECT id FROM students WHERE userId = ?", [userId]);
+        // Find all student record IDs associated with this user
+        const [studentRecords] = await db.query("SELECT id FROM students WHERE userId = ?", [userId]);
 
-        if (!student) {
-            return res.status(404).json({ success: false, message: "Student record not found for this user" });
+        if (studentRecords.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: `No student enrollments found for user ID: ${userId}.`
+            });
         }
 
+        const studentIds = studentRecords.map(s => s.id);
+
         const query = `
-            SELECT * FROM fees 
-            WHERE student_id = ? 
-            ORDER BY created_at DESC
+            SELECT 
+                f.*,
+                s.rollNumber,
+                s.section
+            FROM fees f
+            JOIN students s ON f.student_id = s.id
+            WHERE f.student_id IN (?) 
+            ORDER BY f.created_at DESC
         `;
 
-        const [results] = await db.query(query, [student.id]);
+        const [results] = await db.query(query, [studentIds]);
 
         res.status(200).json({
             success: true,

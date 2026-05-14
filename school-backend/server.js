@@ -23,9 +23,11 @@ app.use('/api/teachers', require('./routes/teacher.routes'));
 app.use('/api/admin', require('./routes/dashboard.routes'));
 app.use('/api/notifications', require('./routes/notification.routes'));
 app.use('/api/fees', require('./routes/fee.routes'));
+
+
+// Global Error Middleware
 // Global Error Middleware
 app.use((err, req, res, next) => {
-    console.error("ERROR CAUGHT:", err);
     err.statusCode = err.statusCode || 500;
     err.message = err.message || "Internal Server Error";
     res.status(err.statusCode).json({

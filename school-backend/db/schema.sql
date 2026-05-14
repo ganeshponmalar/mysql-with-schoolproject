@@ -158,3 +158,8 @@ CREATE TABLE IF NOT EXISTS admissions (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (classId) REFERENCES classes(id)
 );
+
+
+
+
+
