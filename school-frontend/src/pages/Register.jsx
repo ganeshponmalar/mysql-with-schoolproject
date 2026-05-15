@@ -35,8 +35,9 @@ const Register = () => {
                     {success && <div className="mb-5 bg-green-50 text-green-600 border border-green-100 p-3 rounded-lg text-sm">{success}</div>}
                     <form onSubmit={handleSubmit} className="space-y-4">
                         <div>
-                            <label className="block text-sm font-semibold text-gray-700 mb-1">Full Name</label>
+                            <label htmlFor="name" className="block text-sm font-semibold text-gray-700 mb-1">Full Name</label>
                             <input
+                                id="name"
                                 type="text"
                                 className="w-full border bg-gray-50/50 rounded-xl p-3 focus:ring-2 focus:ring-primary outline-none transition-all"
                                 value={name}
@@ -45,8 +46,9 @@ const Register = () => {
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-semibold text-gray-700 mb-1">Email Address</label>
+                            <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-1">Email Address</label>
                             <input
+                                id="email"
                                 type="email"
                                 className="w-full border bg-gray-50/50 rounded-xl p-3 focus:ring-2 focus:ring-primary outline-none transition-all"
                                 value={email}
@@ -55,8 +57,9 @@ const Register = () => {
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-semibold text-gray-700 mb-1">Password</label>
+                            <label htmlFor="password" className="block text-sm font-semibold text-gray-700 mb-1">Password</label>
                             <input
+                                id="password"
                                 type="password"
                                 className="w-full border bg-gray-50/50 rounded-xl p-3 focus:ring-2 focus:ring-primary outline-none transition-all"
                                 minLength={6}
@@ -66,8 +69,9 @@ const Register = () => {
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-semibold text-gray-700 mb-1">Register As</label>
+                            <label htmlFor="role" className="block text-sm font-semibold text-gray-700 mb-1">Register As</label>
                             <select
+                                id="role"
                                 className="w-full border bg-gray-50/50 rounded-xl p-3 focus:ring-2 focus:ring-primary outline-none transition-all"
                                 value={role}
                                 onChange={(e) => setRole(e.target.value)}
