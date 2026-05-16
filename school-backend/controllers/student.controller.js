@@ -190,7 +190,12 @@ exports.studentProfile = errorHandler(async (req, res, next) => {
     );
 
     if (rows.length === 0) {
-        return next(new ErrorHandler(`Student record not found for user ID: ${req.user.id}`, 404));
+        return res.status(200).json({
+            success: true,
+            message: "No student records found",
+            count: 0,
+            students: []
+        });
     }
 
     res.status(200).json({

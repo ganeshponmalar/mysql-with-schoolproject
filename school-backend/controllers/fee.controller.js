@@ -92,9 +92,10 @@ const getMyFees = async (req, res, next) => {
         const [studentRecords] = await db.query("SELECT id FROM students WHERE userId = ?", [userId]);
 
         if (studentRecords.length === 0) {
-            return res.status(404).json({
-                success: false,
-                message: `No student enrollments found for user ID: ${userId}.`
+            return res.status(200).json({
+                success: true,
+                message: "No student enrollments found.",
+                fees: []
             });
         }
 

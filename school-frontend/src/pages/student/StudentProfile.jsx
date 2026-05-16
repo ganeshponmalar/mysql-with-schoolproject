@@ -104,6 +104,18 @@ const StudentProfile = () => {
                     </div>
                 </div>
             ))}
+
+            {profiles.length === 0 && (
+                <div className="bg-white p-20 rounded-[3rem] shadow-[0_32px_64px_-16px_rgba(0,0,0,0.1)] border border-gray-100 flex flex-col items-center justify-center text-center">
+                    <div className="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center mb-6">
+                        <GraduationCap size={48} className="text-gray-300" />
+                    </div>
+                    <h2 className="text-3xl font-black text-gray-800 tracking-tight mb-2">No Student Dossiers Found</h2>
+                    <p className="text-lg text-gray-500 max-w-md">
+                        Your account hasn't been linked to any student enrollments yet. Please contact administration for assistance.
+                    </p>
+                </div>
+            )}
         </div>
     );
 };
