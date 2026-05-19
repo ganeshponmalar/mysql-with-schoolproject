@@ -8,13 +8,13 @@ const registerSchema = joi.object({
     name: joi.string().required(),
     email: joi.string().email().required(),
     password: joi.string().required().min(6),
-    role: joi.string().valid('admin', 'teacher', 'student').required()
+    role: joi.string().valid('admin', 'teacher', 'student', 'parent').required()
 });
 
 const loginSchema = joi.object({
     email: joi.string().email().required(),
     password: joi.string().required(),
-    role: joi.string().valid('admin', 'teacher', 'student').optional()
+    role: joi.string().valid('admin', 'teacher', 'student', 'parent').optional()
 });
 
 router.post('/register', validate(registerSchema), authController.register);

@@ -14,8 +14,13 @@ import StudentProfile from './pages/student/StudentProfile';
 import Teachers from './pages/admin/Teachers';
 import SendNotification from './pages/teacher/SendNotification';
 import StudentNotifications from './pages/student/StudentNotifications';
-import ManageFees from './pages/teacher/ManageFees';
+import Attendance from './pages/teacher/Attendance';
+import Results from './pages/teacher/Results';
+import Homework from './pages/teacher/Homework';
+import Announcements from './pages/admin/Announcements';
 import StudentFeeBoard from './pages/student/StudentFeeBoard';
+import ManageFees from './pages/teacher/ManageFees';
+import ParentDashboard from './pages/parent/ParentDashboard';
 
 const Unauthorized = () => <div className="flex h-screen items-center justify-center text-red-500 font-bold bg-red-50 text-2xl">Unauthorized Access</div>;
 
@@ -26,6 +31,7 @@ const RootRedirect = () => {
   if (user.role === 'admin') return <Navigate to="/admin" replace />;
   if (user.role === 'teacher') return <Navigate to="/teacher" replace />;
   if (user.role === 'student') return <Navigate to="/student" replace />;
+  if (user.role === 'parent') return <Navigate to="/parent" replace />;
   return <Navigate to="/login" replace />;
 };
 
@@ -50,6 +56,7 @@ function App() {
               <Route path="students" element={<Students />} />
               <Route path="teachers" element={<Teachers />} />
               <Route path="notifications" element={<SendNotification />} />
+              <Route path="announcements" element={<Announcements />} />
             </Route>
 
             {/* Teacher Base */}
@@ -62,6 +69,9 @@ function App() {
               <Route path="manage-teachers" element={<Teachers />} />
               <Route path="notifications" element={<SendNotification />} />
               <Route path="fees" element={<ManageFees />} />
+              <Route path="attendance" element={<Attendance />} />
+              <Route path="results" element={<Results />} />
+              <Route path="homework" element={<Homework />} />
             </Route>
 
             {/* Student Base */}
@@ -75,6 +85,13 @@ function App() {
               <Route path="notifications" element={<StudentNotifications />} />
               <Route path="fee-board" element={<StudentFeeBoard />} />
             </Route>
+
+            {/* Parent Base */}
+            <Route path="/parent/*" element={
+              <ProtectedRoute roles={['parent']}>
+                <ParentDashboard />
+              </ProtectedRoute>
+            } />
           </Routes>
         </div>
       </AuthProvider>

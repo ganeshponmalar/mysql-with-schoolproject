@@ -1,5 +1,5 @@
 import React from 'react';
-import { Calendar, CheckCircle, FileText, Activity, User, Bell, DollarSign } from 'lucide-react';
+import { Calendar, CheckCircle, FileText, Activity, User, Bell, DollarSign, Megaphone } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { Link, Outlet } from 'react-router-dom';
 
@@ -16,9 +16,11 @@ const TeacherDashboard = () => {
                     <Link to="/teacher" className="flex items-center gap-3 px-4 py-3 bg-secondary bg-opacity-10 text-secondary rounded-xl font-medium"><Activity size={20} /> Overview</Link>
                     <Link to="/teacher/profile" className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-xl"><User size={20} /> Profile</Link>
                     <Link to="/teacher/manage-teachers" className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-xl"><FileText size={20} /> Manage Teachers</Link>
-                    <Link to="/teacher/notifications" className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-xl"><Bell size={20} /> Notifications</Link>
-                    <Link to="/teacher/fees" className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-xl"><DollarSign size={20} /> Manage Fees</Link>
-                    <a href="#" className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-xl"><CheckCircle size={20} /> Attendance</a>
+                    <Link to="/teacher/notifications" className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-xl transition-colors"><Bell size={20} /> Notifications</Link>
+                    <Link to="/teacher/fees" className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-xl transition-colors"><DollarSign size={20} /> Manage Fees</Link>
+                    <Link to="/teacher/attendance" className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-xl transition-colors"><CheckCircle size={20} /> Attendance</Link>
+                    <Link to="/teacher/results" className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-xl transition-colors"><Activity size={20} /> Exam Results</Link>
+                    <Link to="/teacher/homework" className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-xl transition-colors"><FileText size={20} /> Homework</Link>
                 </nav>
                 <div className="p-4 border-t">
                     <button onClick={logout} className="w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 rounded-lg">Sign Out</button>

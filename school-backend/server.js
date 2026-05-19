@@ -23,6 +23,11 @@ app.use('/api/teachers', require('./routes/teacher.routes'));
 app.use('/api/admin', require('./routes/dashboard.routes'));
 app.use('/api/notifications', require('./routes/notification.routes'));
 app.use('/api/fees', require('./routes/fee.routes'));
+app.use('/api/parents', require('./routes/parent.routes'));
+app.use('/api/attendance', require('./routes/attendance.routes'));
+app.use('/api/results', require('./routes/exam_result.routes'));
+app.use('/api/homework', require('./routes/homework.routes'));
+app.use('/api/announcements', require('./routes/announcement.routes'));
 
 
 // Global Error Middleware

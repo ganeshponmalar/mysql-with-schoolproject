@@ -14,7 +14,12 @@ router.get('/:id', allowRoles('admin', 'teacher', 'student'), studentController.
 router.post('/', allowRoles('admin', 'student'), studentController.createStudent);
 router.put('/:id', allowRoles('admin', 'student'), studentController.updateStudent);
 router.delete('/:id', allowRoles('admin', 'student'), studentController.deleteStudent);
+router.post('/:id/link-parent', allowRoles('admin'), studentController.linkParent);
 
+router.get('/profile', studentController.studentProfile);
+router.get('/attendance', studentController.getAttendance);
+router.get('/results', studentController.getResults);
+router.get('/homework', studentController.getHomework);
 router.post('/logout', studentController.logoutStudent);
 
 module.exports = router;

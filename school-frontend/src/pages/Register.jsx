@@ -79,6 +79,7 @@ const Register = () => {
                                 <option value="student">Student</option>
                                 <option value="teacher">Teacher</option>
                                 <option value="admin">Administrator</option>
+                                <option value="parent">Parent</option>
                             </select>
                         </div>
                         <button type="submit" className="w-full bg-primary hover:bg-primary/90 text-white font-bold py-3.5 px-4 rounded-xl shadow-[0_10px_20px_theme('colors.primary.100')] mt-4 transition-transform hover:-translate-y-0.5">

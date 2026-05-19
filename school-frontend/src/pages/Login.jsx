@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
-import { GraduationCap, BookOpen, Settings } from 'lucide-react';
+import { GraduationCap, BookOpen, Settings, Users } from 'lucide-react';
 
 const Login = () => {
     const [email, setEmail] = useState('');
@@ -14,7 +14,8 @@ const Login = () => {
     const roleInfo = {
         student: { icon: <GraduationCap size={40} className="mx-auto" />, desc: "Access your attendance, homework submissions, fees, and exam results directly.", bg: "bg-primary" },
         teacher: { icon: <BookOpen size={40} className="mx-auto" />, desc: "Manage assigned classes, mark attendance, and grade student assignments intuitively.", bg: "bg-secondary" },
-        admin: { icon: <Settings size={40} className="mx-auto" />, desc: "Complete administrative control over operations, admissions, and entire school analytics.", bg: "bg-accent" }
+        admin: { icon: <Settings size={40} className="mx-auto" />, desc: "Complete administrative control over operations, admissions, and entire school analytics.", bg: "bg-accent" },
+        parent: { icon: <Users size={40} className="mx-auto" />, desc: "Monitor your child's profile, attendance, exam results, and stay in touch with teachers.", bg: "bg-teal-500" }
     };
 
     const handleSubmit = async (e) => {
@@ -28,6 +29,7 @@ const Login = () => {
             }
             if (user.role === 'admin') navigate('/admin');
             else if (user.role === 'teacher') navigate('/teacher');
+            else if (user.role === 'parent') navigate('/parent');
             else navigate('/student');
         } catch (err) {
             setError(err.response?.data?.message || 'Login failed Check credentials');
@@ -57,8 +59,8 @@ const Login = () => {
                     <form onSubmit={handleSubmit} className="space-y-5">
 
                         {/* Selector Tabs */}
-                        <div className="flex p-1 bg-gray-100 rounded-xl mb-6">
-                            {['student', 'teacher', 'admin'].map(r => (
+                        <div className="flex p-1 bg-gray-100 rounded-xl mb-6 flex-wrap">
+                            {['student', 'teacher', 'admin', 'parent'].map(r => (
                                 <button
                                     key={r}
                                     type="button"
@@ -95,7 +97,7 @@ const Login = () => {
                         <button
                             type="submit"
                             className={`w-full text-white font-bold py-3.5 px-4 rounded-xl transition-all transform hover:-translate-y-0.5 active:translate-y-0 shadow-lg mt-4
-                            ${role === 'student' ? 'bg-primary hover:bg-primary/90 shadow-primary/30' : role === 'teacher' ? 'bg-secondary hover:bg-secondary/90 shadow-secondary/30' : 'bg-accent hover:bg-accent/90 shadow-accent/30'}`}>
+                            ${role === 'student' ? 'bg-primary hover:bg-primary/90 shadow-primary/30' : role === 'teacher' ? 'bg-secondary hover:bg-secondary/90 shadow-secondary/30' : role === 'parent' ? 'bg-teal-500 hover:bg-teal-600 shadow-teal-500/30' : 'bg-accent hover:bg-accent/90 shadow-accent/30'}`}>
                             Login to {role.charAt(0).toUpperCase() + role.slice(1)} Dashboard
                         </button>
                     </form>
