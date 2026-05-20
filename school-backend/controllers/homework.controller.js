@@ -12,12 +12,12 @@ const createHomework = async (req, res, next) => {
             return res.status(400).json({ success: false, message: "Please provide title and class_id." });
         }
 
-        // Resolve teacher's own teachers.id record (FK may reference teachers table)
-        let assigned_by = userId;
-        const [teacherRows] = await db.query(`SELECT id FROM teachers WHERE user_id = ?`, [userId]);
-        if (teacherRows.length > 0) {
-            assigned_by = teacherRows[0].id;
+        const [classRows] = await db.query(`SELECT id FROM classes WHERE id = ?`, [class_id]);
+        if (classRows.length === 0) {
+            return res.status(400).json({ success: false, message: `Class with id ${class_id} does not exist.` });
         }
+
+        const assigned_by = userId;
 
         const query = `
             INSERT INTO homework (title, description, subject, class_id, due_date, assigned_by, attachment_url)

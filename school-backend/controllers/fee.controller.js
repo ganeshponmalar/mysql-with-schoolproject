@@ -5,7 +5,7 @@ const createFee = async (req, res, next) => {
     try {
         const { studentId, amount, dueDate, paymentDate } = req.body;
 
-        if (!studentId || !amount || !dueDate) {
+        if (!studentId || amount == null || !dueDate) {
             return res.status(400).json({
                 success: false,
                 message: "Student Roll Number/ID, amount, and dueDate are required"
@@ -35,17 +35,20 @@ const createFee = async (req, res, next) => {
 
         const actualStudentId = studentResult[0].id;
 
-        let status = "pending";
-        if (paymentDate) status = "paid";
-        else if (new Date(dueDate) < new Date()) status = "overdue";
+        // Map submitted values to the current DB schema: total_amount and paid_amount
+        const total_amount = parseFloat(amount);
+        const paid_amount = paymentDate ? parseFloat(amount) : 0.00;
+
+        // Use enum values present in the DB (avoid lowercase mismatch)
+        const status = paymentDate ? 'Paid' : 'Pending';
 
         const insertQuery = `
             INSERT INTO fees
-            (student_id, amount, due_date, payment_date, status)
+            (student_id, total_amount, paid_amount, due_date, status)
             VALUES (?, ?, ?, ?, ?)
         `;
 
-        const [result] = await db.query(insertQuery, [actualStudentId, amount, dueDate, paymentDate || null, status]);
+        const [result] = await db.query(insertQuery, [actualStudentId, total_amount, paid_amount, dueDate, status]);
 
         res.status(201).json({
             success: true,
@@ -56,6 +59,9 @@ const createFee = async (req, res, next) => {
         next(error);
     }
 };
+
+
+
 
 // GET ALL FEES
 const getAllFees = async (req, res, next) => {
@@ -68,7 +74,7 @@ const getAllFees = async (req, res, next) => {
             FROM fees f
             JOIN students s ON f.student_id = s.id
             JOIN users u ON s.userId = u.id
-            ORDER BY f.created_at DESC
+            ORDER BY f.id DESC
         `;
 
         const [results] = await db.query(query);

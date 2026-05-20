@@ -11,17 +11,52 @@ const Homework = () => {
         due_date: '',
         attachment_url: ''
     });
+
+    const showHomeworkNotification = () => {
+        if (typeof window === 'undefined' || !('Notification' in window)) return;
+
+        const sendNotification = () => {
+            new Notification('Homework assigned', {
+                body: 'New homework has been posted successfully.',
+                icon: '/favicon.ico'
+            });
+        };
+
+        if (Notification.permission === 'granted') {
+            sendNotification();
+        } else if (Notification.permission !== 'denied') {
+            Notification.requestPermission().then((permission) => {
+                if (permission === 'granted') {
+                    sendNotification();
+                }
+            });
+        }
+    };
     
     const [saving, setSaving] = useState(false);
     const [message, setMessage] = useState(null);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
         setSaving(true);
         setMessage(null);
+
         try {
-            await api.post('/homework', formData);
-            setMessage({ type: 'success', text: 'Homework assigned successfully!' });
+
+            console.log("Sending:", formData);
+
+            const response = await api.post('/homework', formData);
+
+            console.log(response.data);
+
+            setMessage({
+                type: 'success',
+                text: 'Homework assigned successfully!'
+            });
+
+            showHomeworkNotification();
+
             setFormData({
                 title: '',
                 description: '',
@@ -30,9 +65,19 @@ const Homework = () => {
                 due_date: '',
                 attachment_url: ''
             });
+
         } catch (err) {
-            console.error(err);
-            setMessage({ type: 'error', text: 'Failed to assign homework.' });
+
+            console.log(err.response?.data);
+
+            setMessage({
+                type: 'error',
+                text:
+                    err.response?.data?.message ||
+                    err.response?.data?.error ||
+                    'Failed to assign homework.'
+            });
+
         } finally {
             setSaving(false);
         }

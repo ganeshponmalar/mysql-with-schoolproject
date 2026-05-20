@@ -1,6 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import api from '../../services/api';
 import { CheckCircle, XCircle, Clock, AlertCircle, Save, Calendar } from 'lucide-react';
+
+const DEFAULT_ATTENDANCE = { status: 'present', remarks: '' };
+const STATUS_OPTIONS = [
+    { label: 'Present', value: 'present', icon: CheckCircle, activeClasses: 'text-green-500 bg-green-50 border-green-500/50', inactiveClasses: 'border-transparent text-gray-300 hover:text-gray-400 hover:bg-gray-50' },
+    { label: 'Absent', value: 'absent', icon: XCircle, activeClasses: 'text-red-500 bg-red-50 border-red-500/50', inactiveClasses: 'border-transparent text-gray-300 hover:text-gray-400 hover:bg-gray-50' },
+    { label: 'Late', value: 'late', icon: Clock, activeClasses: 'text-amber-500 bg-amber-50 border-amber-500/50', inactiveClasses: 'border-transparent text-gray-300 hover:text-gray-400 hover:bg-gray-50' },
+    { label: 'Leave', value: 'leave', icon: AlertCircle, activeClasses: 'text-blue-500 bg-blue-50 border-blue-500/50', inactiveClasses: 'border-transparent text-gray-300 hover:text-gray-400 hover:bg-gray-50' }
+];
 
 const Attendance = () => {
     const [students, setStudents] = useState([]);
@@ -11,25 +19,27 @@ const Attendance = () => {
     const [message, setMessage] = useState(null);
 
     useEffect(() => {
-        fetchStudents();
-    }, []);
+        const loadStudents = async () => {
+            try {
+                const res = await api.get('/students');
+                const studentsData = res?.data?.students ?? [];
+                setStudents(studentsData);
 
-    const fetchStudents = async () => {
-        try {
-            const res = await api.get('/students');
-            setStudents(res.data.students);
-            // Initialize attendance state
-            const initialAttendance = {};
-            res.data.students.forEach(s => {
-                initialAttendance[s.id] = { status: 'present', remarks: '' };
-            });
-            setAttendance(initialAttendance);
-            setLoading(false);
-        } catch (err) {
-            console.error(err);
-            setLoading(false);
-        }
-    };
+                const initialAttendance = studentsData.reduce((acc, student) => {
+                    acc[student.id] = { ...DEFAULT_ATTENDANCE };
+                    return acc;
+                }, {});
+
+                setAttendance(initialAttendance);
+            } catch (err) {
+                console.error(err);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        loadStudents();
+    }, []);
 
     const handleStatusChange = (studentId, status) => {
         setAttendance(prev => ({
@@ -57,15 +67,21 @@ const Attendance = () => {
             const promises = Object.entries(attendance).map(([studentId, data]) => {
                 return api.post('/attendance', {
                     student_id: studentId,
-                    class_id: 1, // Placeholder: in real app, select class
-                    date: date,
+                    class_id: 1,
+                    date,
                     status: data.status,
                     remarks: data.remarks
                 });
             });
 
-            await Promise.all(promises);
-            setMessage({ type: 'success', text: 'Attendance recorded for all students!' });
+            const results = await Promise.allSettled(promises);
+            const failed = results.filter((item) => item.status === 'rejected').length;
+
+            if (failed === 0) {
+                setMessage({ type: 'success', text: 'Attendance recorded for all students!' });
+            } else {
+                setMessage({ type: 'error', text: `${failed} attendance record${failed > 1 ? 's' : ''} failed to save.` });
+            }
         } catch (err) {
             console.error(err);
             setMessage({ type: 'error', text: 'Failed to save some or all attendance records.' });
@@ -111,52 +127,52 @@ const Attendance = () => {
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-50">
-                        {students.map((student) => (
-                            <tr key={student.id} className="group hover:bg-gray-50/50 transition-colors">
-                                <td className="px-10 py-6">
-                                    <div className="flex items-center gap-4">
-                                        <div className="w-12 h-12 rounded-2xl bg-secondary/10 flex items-center justify-center font-black text-secondary text-lg">
-                                            {student.studentName?.charAt(0) || 'S'}
+                        {students.map((student) => {
+                            const studentAttendance = attendance[student.id] ?? DEFAULT_ATTENDANCE;
+                            const studentInitial = student.studentName?.charAt(0).toUpperCase() ?? 'S';
+
+                            return (
+                                <tr key={student.id} className="group hover:bg-gray-50/50 transition-colors">
+                                    <td className="px-10 py-6">
+                                        <div className="flex items-center gap-4">
+                                            <div className="w-12 h-12 rounded-2xl bg-secondary/10 flex items-center justify-center font-black text-secondary text-lg">
+                                                {studentInitial}
+                                            </div>
+                                            <div>
+                                                <div className="font-black text-gray-900 leading-tight">{student.studentName}</div>
+                                                <div className="text-xs font-bold text-gray-400 mt-0.5">Roll: {student.rollNumber}</div>
+                                            </div>
                                         </div>
-                                        <div>
-                                            <div className="font-black text-gray-900 leading-tight">{student.studentName}</div>
-                                            <div className="text-xs font-bold text-gray-400 mt-0.5">Roll: {student.rollNumber}</div>
+                                    </td>
+                                    <td className="px-8 py-6">
+                                        <div className="flex justify-center gap-2">
+                                            {STATUS_OPTIONS.map((opt) => {
+                                                const isActive = studentAttendance.status === opt.value;
+                                                return (
+                                                    <button
+                                                        key={opt.value}
+                                                        onClick={() => handleStatusChange(student.id, opt.value)}
+                                                        className={`p-2 rounded-xl border-2 transition-all flex flex-col items-center gap-1 ${isActive ? `${opt.activeClasses} shadow-sm` : opt.inactiveClasses}`}
+                                                    >
+                                                        <opt.icon size={20} className={isActive ? opt.activeClasses.split(' ')[0] : 'text-current'} />
+                                                        <span className="text-[10px] font-black uppercase tracking-tighter">{opt.label}</span>
+                                                    </button>
+                                                );
+                                            })}
                                         </div>
-                                    </div>
-                                </td>
-                                <td className="px-8 py-6">
-                                    <div className="flex justify-center gap-2">
-                                        {[
-                                            { label: 'Present', value: 'present', icon: CheckCircle, color: 'text-green-500', bg: 'bg-green-50' },
-                                            { label: 'Absent', value: 'absent', icon: XCircle, color: 'text-red-500', bg: 'bg-red-50' },
-                                            { label: 'Late', value: 'late', icon: Clock, color: 'text-amber-500', bg: 'bg-amber-50' },
-                                            { label: 'Leave', value: 'leave', icon: AlertCircle, color: 'text-blue-500', bg: 'bg-blue-50' }
-                                        ].map((opt) => (
-                                            <button
-                                                key={opt.value}
-                                                onClick={() => handleStatusChange(student.id, opt.value)}
-                                                className={`p-2 rounded-xl border-2 transition-all flex flex-col items-center gap-1 group/btn
-                                                    ${attendance[student.id]?.status === opt.value
-                                                        ? `${opt.bg} border-${opt.color.split('-')[1]}-500/50 shadow-sm`
-                                                        : 'border-transparent text-gray-300 hover:text-gray-400 hover:bg-gray-50'}`}
-                                            >
-                                                <opt.icon size={20} className={attendance[student.id]?.status === opt.value ? opt.color : 'text-current'} />
-                                                <span className="text-[10px] font-black uppercase tracking-tighter">{opt.label}</span>
-                                            </button>
-                                        ))}
-                                    </div>
-                                </td>
-                                <td className="px-10 py-6">
-                                    <input
-                                        type="text"
-                                        placeholder="Add note..."
-                                        value={attendance[student.id]?.remarks || ''}
-                                        onChange={(e) => handleRemarksChange(student.id, e.target.value)}
-                                        className="w-full bg-gray-100/50 border-none rounded-xl p-3 text-sm font-bold text-gray-600 outline-none focus:bg-white focus:ring-2 focus:ring-secondary/20 transition-all"
-                                    />
-                                </td>
-                            </tr>
-                        ))}
+                                    </td>
+                                    <td className="px-10 py-6">
+                                        <input
+                                            type="text"
+                                            placeholder="Add note..."
+                                            value={studentAttendance.remarks}
+                                            onChange={(e) => handleRemarksChange(student.id, e.target.value)}
+                                            className="w-full bg-gray-100/50 border-none rounded-xl p-3 text-sm font-bold text-gray-600 outline-none focus:bg-white focus:ring-2 focus:ring-secondary/20 transition-all"
+                                        />
+                                    </td>
+                                </tr>
+                            );
+                        })}
                     </tbody>
                 </table>
                 <div className="p-8 bg-gray-50/50 border-t flex justify-end">

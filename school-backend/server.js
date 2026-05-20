@@ -3,6 +3,7 @@ const cors = require('cors');
 const cookieParser = require('cookie-parser');
 require('dotenv').config();
 
+const db = require('./db/db');
 const app = express();
 
 app.use(cors({ origin: 'http://localhost:5173', credentials: true }));
@@ -42,6 +43,34 @@ app.use((err, req, res, next) => {
 });
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-});
+
+const ensureNotificationsTable = async () => {
+    const query = `
+        CREATE TABLE IF NOT EXISTS notifications (
+            id INT PRIMARY KEY AUTO_INCREMENT,
+            sender_id INT NOT NULL,
+            title VARCHAR(255) NOT NULL,
+            message TEXT NOT NULL,
+            recipient_group VARCHAR(50) NOT NULL,
+            status ENUM('active','inactive') DEFAULT 'active',
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (sender_id) REFERENCES users(id) ON DELETE CASCADE
+        );
+    `;
+    await db.query(query);
+};
+
+const startServer = async () => {
+    try {
+        await ensureNotificationsTable();
+        console.log('Notifications table verified or created.');
+    } catch (error) {
+        console.error('Failed to ensure notifications table:', error);
+    }
+
+    app.listen(PORT, () => {
+        console.log(`Server is running on port ${PORT}`);
+    });
+};
+
+startServer();
