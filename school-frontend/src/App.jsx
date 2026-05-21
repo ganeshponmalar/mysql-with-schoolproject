@@ -18,6 +18,7 @@ import Attendance from './pages/teacher/Attendance';
 import Results from './pages/teacher/Results';
 import Homework from './pages/teacher/Homework';
 import Announcements from './pages/admin/Announcements';
+import CreateResult from './pages/admin/CreateResult';
 import StudentFeeBoard from './pages/student/StudentFeeBoard';
 import ManageFees from './pages/teacher/ManageFees';
 import ParentDashboard from './pages/parent/ParentDashboard';
@@ -82,9 +83,20 @@ function App() {
             }>
               <Route path="profile" element={<StudentProfile />} />
               <Route path="manage-students" element={<Students />} />
-              <Route path="notifications" element={<StudentNotifications />} />
               <Route path="fee-board" element={<StudentFeeBoard />} />
             </Route>
+            <Route path="/student/notifications" element={
+              <ProtectedRoute roles={['student']}>
+                <StudentNotifications />
+              </ProtectedRoute>
+            } />
+
+            {/* Admin Create Result */}
+            <Route path="/admin/results" element={
+              <ProtectedRoute roles={['admin']}>
+                <CreateResult />
+              </ProtectedRoute>
+            } />
 
             {/* Parent Base */}
             <Route path="/parent/*" element={

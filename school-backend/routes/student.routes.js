@@ -3,23 +3,33 @@ const router = express.Router();
 const studentController = require('../controllers/student.controller.js');
 const { verifyToken, allowRoles } = require('../middleware/auth.js');
 
-// Protected routes (Admin, Teacher see student lists)
+// Verify token for all routes
 router.use(verifyToken);
 
-router.get('/', allowRoles('admin', 'teacher', 'student'), studentController.getAllStudents);
-router.get('/profile', allowRoles('student'), studentController.studentProfile);
-router.get('/:id', allowRoles('admin', 'teacher', 'student'), studentController.getSingleStudent);
+// =========================
+// STUDENT DASHBOARD ROUTES (STATIC - MUST BE FIRST)
+// =========================
 
-// Now allowing student role for testing/project requirements as requested
-router.post('/', allowRoles('admin', 'student'), studentController.createStudent);
-router.put('/:id', allowRoles('admin', 'student'), studentController.updateStudent);
-router.delete('/:id', allowRoles('admin', 'student'), studentController.deleteStudent);
+router.get('/profile', allowRoles('student'), studentController.studentProfile);
+router.get('/attendance', allowRoles('student'), studentController.getAttendance);
+router.get('/results', allowRoles('student'), studentController.getResults);
+router.get('/homework', allowRoles('student'), studentController.getHomework);
+router.post('/logout', allowRoles('student'), studentController.logoutStudent);
+
+// =========================
+// ADMIN / TEACHER ROUTES (STATIC)
+// =========================
+
+router.get('/', allowRoles('admin', 'teacher'), studentController.getAllStudents);
+router.post('/', allowRoles('admin'), studentController.createStudent);
 router.post('/:id/link-parent', allowRoles('admin'), studentController.linkParent);
 
-router.get('/profile', studentController.studentProfile);
-router.get('/attendance', studentController.getAttendance);
-router.get('/results', studentController.getResults);
-router.get('/homework', studentController.getHomework);
-router.post('/logout', studentController.logoutStudent);
+// =========================
+// DYNAMIC ROUTE MUST BE LAST
+// =========================
+
+router.get('/:id', allowRoles('admin', 'teacher', 'student'), studentController.getSingleStudent);
+router.put('/:id', allowRoles('admin'), studentController.updateStudent);
+router.delete('/:id', allowRoles('admin'), studentController.deleteStudent);
 
 module.exports = router;

@@ -43,12 +43,13 @@ const ParentDashboard = () => {
     const fetchChildren = async () => {
         try {
             const res = await api.get('/parents/children');
+            console.log('[fetchChildren] response', res.data);
             setChildren(res.data.children);
             if (res.data.children?.length > 0) {
                 setSelectedChildId(res.data.children[0].id);
             }
         } catch (err) {
-            console.error("Error fetching children", err);
+            console.error("Error fetching children", err.response?.data || err.message);
         }
     };
 
@@ -60,6 +61,8 @@ const ParentDashboard = () => {
                 api.get(`/parents/children/${id}/results`),
                 api.get(`/parents/children/${id}/assignments`)
             ]);
+            console.log('[fetchChildDetails] id=', id);
+            console.log('[fetchChildDetails] resRes.data=', resRes.data);
             setChildData({
                 profile: profRes.data.profile,
                 attendance: attRes.data.attendance || [],
@@ -67,7 +70,7 @@ const ParentDashboard = () => {
                 assignments: asgnRes.data.assignments || []
             });
         } catch (err) {
-            console.error("Error fetching child details", err);
+            console.error("Error fetching child details", err.response?.data || err.message);
         }
     };
 
@@ -146,7 +149,11 @@ const ParentDashboard = () => {
                             <select
                                 className="w-full bg-teal-50 border border-teal-100 text-teal-800 rounded-xl p-3 font-semibold appearance-none cursor-pointer outline-none focus:ring-2 focus:ring-teal-500"
                                 value={selectedChildId || ''}
-                                onChange={(e) => setSelectedChildId(Number(e.target.value))}
+                                onChange={(e) => {
+                                    const nextId = Number(e.target.value);
+                                    console.log('[ParentDashboard] selectedChildId changed to', nextId);
+                                    setSelectedChildId(nextId);
+                                }}
                             >
                                 {children.length === 0 && <option value="">No Children Linked</option>}
                                 {children.map(c => (
@@ -229,9 +236,9 @@ const ParentDashboard = () => {
                                             </div>
                                             <h3 className="text-rose-100 font-medium">Latest Exam</h3>
                                             <p className="text-3xl font-extrabold mt-1">
-                                                {childData.results.length > 0 ? childData.results[0].marks + '%' : 'N/A'}
+                                                {childData.results.length > 0 ? `${childData.results[0].marks}/${childData.results[0].total_marks}` : 'N/A'}
                                             </p>
-                                            <p className="text-sm text-rose-100 mt-2">{childData.results[0]?.subject_name || 'No exams yet'}</p>
+                                            <p className="text-sm text-rose-100 mt-2">{childData.results[0]?.subject_name || childData.results[0]?.subject || 'No exams yet'}</p>
                                         </div>
                                         <div className="bg-gradient-to-br from-amber-500 to-orange-500 rounded-3xl p-6 text-white shadow-lg">
                                             <div className="flex justify-between items-start mb-4">
@@ -285,7 +292,7 @@ const ParentDashboard = () => {
                                             {childData.results.map(r => (
                                                 <div key={r.id} className="bg-white border-2 border-gray-100 hover:border-rose-200 rounded-2xl p-6 transition-all shadow-sm group">
                                                     <p className="text-rose-500 font-bold mb-1">{r.exam_name}</p>
-                                                    <h3 className="text-xl font-bold text-gray-800 mb-4">{r.subject_name}</h3>
+                                                    <h3 className="text-xl font-bold text-gray-800 mb-4">{r.subject_name || r.subject}</h3>
                                                     <div className="flex justify-between items-end">
                                                         <div>
                                                             <p className="text-sm text-gray-400">Score Achieved</p>

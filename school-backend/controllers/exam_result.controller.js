@@ -2,20 +2,55 @@ const db = require('../db/db');
 
 // @desc    Record exam results
 // @route   POST /api/results
-// @access  Teacher
+// @access  Teacher, Admin
 const createResult = async (req, res, next) => {
     try {
         const { student_id, exam_name, subject, marks, total_marks, grade, remarks, exam_date } = req.body;
+
+        console.log('[createResult] Input:', { student_id, exam_name, subject, marks, total_marks });
 
         if (!student_id || !exam_name || !subject || !marks || !total_marks) {
             return res.status(400).json({ success: false, message: "Please provide student_id, exam_name, subject, marks, and total_marks." });
         }
 
+        const [studentRecords] = await db.query('SELECT id, userId FROM students WHERE id = ?', [student_id]);
+        if (studentRecords.length === 0) {
+            return res.status(404).json({ success: false, message: `Student with id ${student_id} not found. Use the student.id value, not userId.` });
+        }
+
+        // Insert exam result
         const query = `
             INSERT INTO exam_results (student_id, exam_name, subject, marks, total_marks, grade, remarks, exam_date)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         `;
         const [result] = await db.query(query, [student_id, exam_name, subject, marks, total_marks, grade, remarks, exam_date]);
+
+        console.log('[createResult] Result inserted with ID:', result.insertId);
+
+        // Find linked parents
+        const [parents] = await db.query(
+            'SELECT parent_id FROM parent_students WHERE student_id = ?',
+            [student_id]
+        );
+
+        console.log('[createResult] Found', parents.length, 'linked parents');
+
+        // Optional: Create notifications for parents (if announcements table exists)
+        if (parents.length > 0) {
+            try {
+                const notificationMsg = `New exam result: ${subject} (${marks}/${total_marks}) for ${exam_name}`;
+                for (const parent of parents) {
+                    await db.query(
+                        'INSERT INTO announcements (title, content, target_role, created_by) VALUES (?, ?, ?, ?)',
+                        ['Exam Result Notification', notificationMsg, 'parent', 'system']
+                    ).catch(() => {
+                        console.log('[createResult] Announcements table not available, skipping notification');
+                    });
+                }
+            } catch (notifyErr) {
+                console.log('[createResult] Notification creation failed:', notifyErr.message);
+            }
+        }
 
         res.status(201).json({
             success: true,
@@ -23,6 +58,7 @@ const createResult = async (req, res, next) => {
             resultId: result.insertId
         });
     } catch (error) {
+        console.error('[createResult] Error:', error);
         next(error);
     }
 };

@@ -251,12 +251,42 @@ exports.getAttendance = errorHandler(async (req, res, next) => {
 // GET STUDENT RESULTS (View for Student)
 exports.getResults = errorHandler(async (req, res, next) => {
     const userId = req.user.id;
-    const [students] = await db.query("SELECT id FROM students WHERE userId = ?", [userId]);
-    if (students.length === 0) return res.status(404).json({ success: false, message: "Student record not found" });
+
+    const [students] = await db.query(
+        "SELECT id FROM students WHERE userId = ?",
+        [userId]
+    );
+
+    if (students.length === 0) {
+        return res.status(404).json({
+            success: false,
+            message: "Student record not found"
+        });
+    }
 
     const student_id = students[0].id;
-    const [results] = await db.query("SELECT * FROM exam_results WHERE student_id = ? ORDER BY exam_date DESC", [student_id]);
-    res.status(200).json({ success: true, results });
+
+    const [results] = await db.query(`
+        SELECT
+            id,
+            exam_name,
+            subject,
+            marks,
+            total_marks,
+            grade,
+            remarks,
+            exam_date,
+            created_at
+        FROM exam_results
+        WHERE student_id = ?
+        ORDER BY exam_date DESC
+    `, [student_id]);
+
+    res.status(200).json({
+        success: true,
+        count: results.length,
+        results
+    });
 });
 
 // GET STUDENT HOMEWORK (View for Student)

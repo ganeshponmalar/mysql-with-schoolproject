@@ -86,6 +86,9 @@ const StudentDashboard = () => {
                     <Link to="/student/profile" className="hidden lg:flex items-center gap-2 text-xs font-black text-gray-400 uppercase tracking-widest hover:text-gray-900 transition-colors px-4">
                         <User size={14} /> My Identity
                     </Link>
+                    <Link to="/student/notifications" className="hidden lg:flex items-center gap-2 text-xs font-black text-gray-400 uppercase tracking-widest hover:text-gray-900 transition-colors px-4">
+                        <Bell size={14} /> Notifications
+                    </Link>
                     <button onClick={logout} className="w-full flex items-center justify-center lg:justify-start gap-4 p-4 rounded-3xl text-red-400 hover:bg-red-50 hover:text-red-600 transition-all">
                         <LogOut size={24} />
                         <span className="hidden lg:block font-black text-md">Exit App</span>

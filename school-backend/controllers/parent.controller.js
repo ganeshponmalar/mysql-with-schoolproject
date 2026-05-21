@@ -11,6 +11,7 @@ const getChildren = async (req, res, next) => {
             JOIN users u ON s.userId = u.id
             WHERE ps.parent_id = ?
         `, [parentId]);
+        console.log('[getChildren] parentId=', parentId, 'children=', children);
         res.json({ success: true, children });
     } catch (error) {
         next(error);
@@ -19,7 +20,7 @@ const getChildren = async (req, res, next) => {
 
 const getChildProfile = async (req, res, next) => {
     try {
-        const { studentId } = req.params;
+        const studentId = req.params.id;
         const [studentInfo] = await db.query(`
             SELECT s.*, u.name, u.email 
             FROM students s 
@@ -38,7 +39,7 @@ const getChildProfile = async (req, res, next) => {
 
 const getChildAttendance = async (req, res, next) => {
     try {
-        const { studentId } = req.params;
+        const studentId = req.params.id;
         const [attendance] = await db.query('SELECT * FROM attendance WHERE student_id = ? ORDER BY date DESC', [studentId]);
         res.json({ success: true, attendance });
     } catch (error) {
@@ -48,19 +49,55 @@ const getChildAttendance = async (req, res, next) => {
 
 const getChildResults = async (req, res, next) => {
     try {
-        const { studentId } = req.params;
-        const [results] = await db.query(`
-            SELECT * FROM exam_results WHERE student_id = ? ORDER BY exam_date DESC
-        `, [studentId]);
-        res.json({ success: true, results });
+        const parentId = req.user.id;
+        const studentId = req.params.id;
+
+        console.log('========== getChildResults DEBUG ==========');
+        console.log('parentId:', parentId);
+        console.log('studentId:', studentId);
+        console.log('req.user:', req.user);
+
+        // Verify parent linked to student
+        const [linked] = await db.query(
+            `SELECT * FROM parent_students WHERE parent_id = ? AND student_id = ?`,
+            [parentId, studentId]
+        );
+
+        console.log('linked rows:', linked.length, linked);
+
+        if (linked.length === 0) {
+            console.log('Parent NOT linked to student');
+            return res.status(403).json({
+                success: false,
+                message: "You are not linked to this student"
+            });
+        }
+
+        console.log('Parent IS linked to student');
+
+        // Fetch results
+        const [results] = await db.query(
+            `SELECT * FROM exam_results WHERE student_id = ? ORDER BY exam_date DESC`,
+            [studentId]
+        );
+
+        console.log('results count:', results.length);
+        console.log('results data:', JSON.stringify(results, null, 2));
+
+        res.status(200).json({
+            success: true,
+            results
+        });
+
     } catch (error) {
+        console.error('getChildResults ERROR:', error);
         next(error);
     }
 };
 
 const getChildAssignments = async (req, res, next) => {
     try {
-        const { studentId } = req.params;
+        const studentId = req.params.id;
         // Fetch homework for the class the student belongs to
         // First get student's class_id. In the current schema, student table has section.
         // Let's assume we fetch homework by class_id = 1 (A) for now, or match section.
