@@ -91,4 +91,5 @@ test('Teacher appointment + notification + fees flow', async ({ page }) => {
   await feesSubmit.evaluate(el => el.click());
 
   await page.waitForTimeout(3000);
+  
 });
