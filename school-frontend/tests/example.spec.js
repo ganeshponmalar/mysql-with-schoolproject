@@ -1,19 +1,27 @@
-// @ts-check
 import { test, expect } from '@playwright/test';
 
-test('has title', async ({ page }) => {
-  await page.goto('https://playwright.dev/');
-
-  // Expect a title "to contain" a substring.
-  await expect(page).toHaveTitle(/Playwright/);
-});
-
-test('get started link', async ({ page }) => {
-  await page.goto('https://playwright.dev/');
-
-  // Click the get started link.
-  await page.getByRole('link', { name: 'Get started' }).click();
-
-  // Expects page to have a heading with the name of Installation.
-  await expect(page.getByRole('heading', { name: 'Installation' })).toBeVisible();
+test('test', async ({ page }) => {
+  await page.goto('https://rahulshettyacademy.com/seleniumPractise/#/');
+  await page.getByRole('searchbox', { name: 'Search for Vegetables and' }).click();
+  await page.getByRole('searchbox', { name: 'Search for Vegetables and' }).fill('brocol');
+  await page.getByRole('button').filter({ hasText: /^$/ }).click();
+  await page.getByRole('searchbox', { name: 'Search for Vegetables and' }).click();
+  await page.getByRole('searchbox', { name: 'Search for Vegetables and' }).fill('');
+  await page.getByRole('button', { name: 'ADD TO CART' }).first().click();
+  await page.getByRole('button', { name: 'ADD TO CART' }).first().click();
+  await page.getByRole('button', { name: 'ADD TO CART' }).first().click();
+  await page.getByRole('button', { name: 'ADD TO CART' }).nth(1).click();
+  await page.getByRole('button', { name: 'ADD TO CART' }).nth(5).click();
+  await page.getByRole('link', { name: 'Cart' }).click();
+  await page.getByRole('link', { name: '×' }).nth(4).click();
+  await page.getByRole('listitem').filter({ hasText: 'Brocolli - 1 Kg1201 No. 120×' }).getByRole('link').click();
+  await page.getByRole('button', { name: 'PROCEED TO CHECKOUT' }).click();
+  await page.getByRole('textbox', { name: 'Enter promo code' }).click();
+  await page.getByRole('textbox', { name: 'Enter promo code' }).fill('606203');
+  await page.getByRole('button', { name: 'Apply' }).click();
+  await page.getByRole('button', { name: 'Place Order' }).click();
+  await page.getByRole('combobox').selectOption('Germany');
+  await page.getByRole('checkbox').check();
+  await page.getByRole('button', { name: 'Proceed' }).click();
+  await page.goto('https://rahulshettyacademy.com/seleniumPractise/#/');
 });
