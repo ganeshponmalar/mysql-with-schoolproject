@@ -1,86 +1,205 @@
-import { chromium } from 'playwright';
+import { test, expect } from '@playwright/test';
+test.setTimeout(120000);
 
-(async () => {
-  const browser = await chromium.launch({
-    headless: false,
-    slowMo: 1000 // Slow down actions by 1 second
-  });
-
-  const context = await browser.newContext();
-  const page = await context.newPage();
+test('Rahul Shetty Practice Page', async ({ page }) => {
 
   // Open website
-  await page.goto('https://rahulshettyacademy.com/AutomationPractice/#top');
+  await page.goto(
+    'https://rahulshettyacademy.com/AutomationPractice/#top',
+    {
+      waitUntil: 'domcontentloaded',
+      timeout: 60000
+    }
+  );
 
-  // Radio buttons
-  await page.locator('label').filter({ hasText: 'Radio1' }).getByRole('radio').check();
-  await page.locator('label').filter({ hasText: 'Radio2' }).getByRole('radio').check();
-  await page.locator('label').filter({ hasText: 'Radio3' }).getByRole('radio').check();
+  // =========================
+  // Radio Buttons
+  // =========================
 
-  // Auto suggestion dropdown
-  await page
-    .getByRole('textbox', { name: 'Type to Select Countries' })
-    .fill('British');
+  await page.locator('label')
+    .filter({ hasText: 'Radio1' })
+    .getByRole('radio')
+    .check();
 
-  // Select exact country
-  await page.getByText('British Indian Ocean Territory', { exact: true }).click();
+  await page.locator('label')
+    .filter({ hasText: 'Radio2' })
+    .getByRole('radio')
+    .check();
 
-  // Static dropdown
-  await page.locator('#dropdown-class-example').selectOption('option1');
-  await page.locator('#dropdown-class-example').selectOption('option3');
+  await page.locator('label')
+    .filter({ hasText: 'Radio3' })
+    .getByRole('radio')
+    .check();
 
+  // =========================
+  // Auto Suggestion
+  // =========================
+
+  await page.locator('#autocomplete').fill('India');
+
+  await page.getByText('India', { exact: true }).click();
+
+  // =========================
+  // Static Dropdown
+  // =========================
+
+  await page.locator('#dropdown-class-example')
+    .selectOption('option2');
+
+  // =========================
   // Checkboxes
+  // =========================
+
   await page.locator('#checkBoxOption1').check();
+
   await page.locator('#checkBoxOption2').check();
+
   await page.locator('#checkBoxOption3').check();
 
-  await page.locator('#checkBoxOption1').uncheck();
-  await page.locator('#checkBoxOption2').uncheck();
+  // Uncheck one checkbox
+  await page.locator('#checkBoxOption3').uncheck();
 
-  // Alert handling
-  await page
-    .getByRole('textbox', { name: 'Enter Your Name' })
-    .fill('ganesh');
+  // =========================
+  // Open Window Popup
+  // =========================
 
-  page.once('dialog', async dialog => {
-    console.log(`Alert Message: ${dialog.message()}`);
-    await dialog.accept();
-  });
+  const popupPromise1 = page.context().waitForEvent('page');
 
-  await page.getByRole('button', { name: 'Alert' }).click();
+  await page.locator('#openwindow').click();
 
-  // Confirm popup
-  await page
-    .getByRole('textbox', { name: 'Enter Your Name' })
-    .fill('web architect');
+  const popup1 = await popupPromise1;
 
-  page.once('dialog', async dialog => {
-    console.log(`Confirm Message: ${dialog.message()}`);
-    await dialog.dismiss();
-  });
+  await popup1.waitForLoadState();
 
-  await page.getByRole('button', { name: 'Confirm' }).click();
+  console.log(
+    'Popup Window Title:',
+    await popup1.title()
+  );
 
-  // Hide / Show buttons
-  await page.getByRole('button', { name: 'Hide' }).click();
+  await popup1.close();
+
+  // =========================
+  // Open Tab Popup
+  // =========================
+
+  const popupPromise2 = page.context().waitForEvent('page');
+
+  await page.locator('#opentab').click();
+
+  const popup2 = await popupPromise2;
+
+  await popup2.waitForLoadState();
+
+  console.log(
+    'Open Tab Title:',
+    await popup2.title()
+  );
+
+  await popup2.close();
+
+  // Bring main page to front
+  await page.bringToFront();
+
+  // =========================
+  // Hide / Show Textbox
+  // =========================
+
+  await page.locator('#hide-textbox').click();
+
   await page.waitForTimeout(1000);
 
-  await page.getByRole('button', { name: 'Show' }).click();
+  await page.locator('#show-textbox').click();
 
-  // Mouse hover
-  await page.getByRole('button', { name: 'Mouse Hover' }).hover();
+  // =========================
+  // Mouse Hover
+  // =========================
+
+  await page.locator('#mousehover').hover();
+
+  await page.waitForTimeout(1000);
 
   await page.getByRole('link', { name: 'Top' }).click();
 
-  // Hover again
-  await page.getByRole('button', { name: 'Mouse Hover' }).hover();
+  // =========================
+  // Alert Popup
+  // =========================
 
-  await page.getByRole('link', { name: 'Reload' }).click();
+  page.once('dialog', async dialog => {
 
-  // Pause before closing
-  await page.waitForTimeout(5000);
+    console.log(
+      'Alert Message:',
+      dialog.message()
+    );
 
-  // Close browser
-  await context.close();
-  await browser.close();
-})();
+    await dialog.accept();
+
+  });
+
+  await page.locator('#alertbtn').click();
+
+  await page.waitForTimeout(1000);
+
+  // =========================
+  // Confirm Popup
+  // =========================
+
+  page.once('dialog', async dialog => {
+
+    console.log(
+      'Confirm Message:',
+      dialog.message()
+    );
+
+    await dialog.dismiss();
+
+  });
+
+  await page.locator('#confirmbtn').click();
+
+  await page.waitForTimeout(1000);
+
+  // =========================
+  // Web Table Rows
+  // =========================
+
+  const rows = page.locator('.table-display tr');
+
+  console.log(
+    'Row Count:',
+    await rows.count()
+  );
+
+  // =========================
+  // iFrame Handling
+  // =========================
+
+  const framePage = page.frameLocator('#courses-iframe');
+
+  await framePage
+    .locator('a[href*="lifetime-access"]')
+    .first()
+    .waitFor({
+      state: 'visible'
+    });
+
+  await framePage
+    .locator('a[href*="lifetime-access"]')
+    .first()
+    .click();
+
+  // =========================
+  // Assertions
+  // =========================
+
+  await expect(
+    page.locator('#checkBoxOption1')
+  ).toBeChecked();
+
+  await expect(
+    page.locator('#dropdown-class-example')
+  ).toHaveValue('option2');
+
+  // Pause for visibility
+  await page.waitForTimeout(3000);
+
+});
