@@ -10,6 +10,7 @@ const Students = () => {
     const [linkingStudent, setLinkingStudent] = useState(null);
     const [parentEmail, setParentEmail] = useState('');
     const [formData, setFormData] = useState({
+        
         userId: '',
         section: '',
         rollNumber: '',

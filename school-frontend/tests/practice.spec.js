@@ -1,9 +1,13 @@
 import { test, expect } from '@playwright/test';
+
 test.setTimeout(120000);
 
 test('Rahul Shetty Practice Page', async ({ page }) => {
 
-  // Open website
+  // =====================================
+  // OPEN WEBSITE
+  // =====================================
+
   await page.goto(
     'https://rahulshettyacademy.com/AutomationPractice/#top',
     {
@@ -12,43 +16,41 @@ test('Rahul Shetty Practice Page', async ({ page }) => {
     }
   );
 
-  // =========================
-  // Radio Buttons
-  // =========================
+  // =====================================
+  // RADIO BUTTONS
+  // =====================================
 
-  await page.locator('label')
-    .filter({ hasText: 'Radio1' })
-    .getByRole('radio')
+  await page.locator('#radio-btn-example input[value="radio1"]')
     .check();
 
-  await page.locator('label')
-    .filter({ hasText: 'Radio2' })
-    .getByRole('radio')
+  await page.locator('#radio-btn-example input[value="radio2"]')
     .check();
 
-  await page.locator('label')
-    .filter({ hasText: 'Radio3' })
-    .getByRole('radio')
+  await page.locator('#radio-btn-example input[value="radio3"]')
     .check();
 
-  // =========================
-  // Auto Suggestion
-  // =========================
+  // =====================================
+  // AUTO SUGGESTION
+  // =====================================
 
-  await page.locator('#autocomplete').fill('India');
+  await page.locator('#autocomplete')
+    .fill('Ind');
 
-  await page.getByText('India', { exact: true }).click();
+  await page.locator('.ui-menu-item div')
+    .filter({ hasText: 'India' })
+    .first()
+    .click();
 
-  // =========================
-  // Static Dropdown
-  // =========================
+  // =====================================
+  // STATIC DROPDOWN
+  // =====================================
 
   await page.locator('#dropdown-class-example')
     .selectOption('option2');
 
-  // =========================
-  // Checkboxes
-  // =========================
+  // =====================================
+  // CHECKBOXES
+  // =====================================
 
   await page.locator('#checkBoxOption1').check();
 
@@ -56,20 +58,18 @@ test('Rahul Shetty Practice Page', async ({ page }) => {
 
   await page.locator('#checkBoxOption3').check();
 
-  // Uncheck one checkbox
   await page.locator('#checkBoxOption3').uncheck();
 
-  // =========================
-  // Open Window Popup
-  // =========================
+  // =====================================
+  // OPEN WINDOW
+  // =====================================
 
-  const popupPromise1 = page.context().waitForEvent('page');
+  const [popup1] = await Promise.all([
+    page.context().waitForEvent('page'),
+    page.locator('#openwindow').click()
+  ]);
 
-  await page.locator('#openwindow').click();
-
-  const popup1 = await popupPromise1;
-
-  await popup1.waitForLoadState();
+  await popup1.waitForLoadState('domcontentloaded');
 
   console.log(
     'Popup Window Title:',
@@ -78,17 +78,16 @@ test('Rahul Shetty Practice Page', async ({ page }) => {
 
   await popup1.close();
 
-  // =========================
-  // Open Tab Popup
-  // =========================
+  // =====================================
+  // OPEN TAB
+  // =====================================
 
-  const popupPromise2 = page.context().waitForEvent('page');
+  const [popup2] = await Promise.all([
+    page.context().waitForEvent('page'),
+    page.locator('#opentab').click()
+  ]);
 
-  await page.locator('#opentab').click();
-
-  const popup2 = await popupPromise2;
-
-  await popup2.waitForLoadState();
+  await popup2.waitForLoadState('domcontentloaded');
 
   console.log(
     'Open Tab Title:',
@@ -97,32 +96,40 @@ test('Rahul Shetty Practice Page', async ({ page }) => {
 
   await popup2.close();
 
-  // Bring main page to front
+  // =====================================
+  // BACK TO MAIN PAGE
+  // =====================================
+
   await page.bringToFront();
 
-  // =========================
-  // Hide / Show Textbox
-  // =========================
+  // =====================================
+  // HIDE / SHOW TEXTBOX
+  // =====================================
 
-  await page.locator('#hide-textbox').click();
-
-  await page.waitForTimeout(1000);
-
-  await page.locator('#show-textbox').click();
-
-  // =========================
-  // Mouse Hover
-  // =========================
-
-  await page.locator('#mousehover').hover();
+  await page.locator('#hide-textbox')
+    .click();
 
   await page.waitForTimeout(1000);
 
-  await page.getByRole('link', { name: 'Top' }).click();
+  await page.locator('#show-textbox')
+    .click({
+      force: true
+    });
 
-  // =========================
-  // Alert Popup
-  // =========================
+  // =====================================
+  // MOUSE HOVER
+  // =====================================
+
+  await page.locator('#mousehover')
+    .hover();
+
+  await page.locator('.mouse-hover-content a')
+    .filter({ hasText: 'Top' })
+    .click();
+
+  // =====================================
+  // ALERT POPUP
+  // =====================================
 
   page.once('dialog', async dialog => {
 
@@ -135,13 +142,12 @@ test('Rahul Shetty Practice Page', async ({ page }) => {
 
   });
 
-  await page.locator('#alertbtn').click();
+  await page.locator('#alertbtn')
+    .click();
 
-  await page.waitForTimeout(1000);
-
-  // =========================
-  // Confirm Popup
-  // =========================
+  // =====================================
+  // CONFIRM POPUP
+  // =====================================
 
   page.once('dialog', async dialog => {
 
@@ -154,13 +160,12 @@ test('Rahul Shetty Practice Page', async ({ page }) => {
 
   });
 
-  await page.locator('#confirmbtn').click();
+  await page.locator('#confirmbtn')
+    .click();
 
-  await page.waitForTimeout(1000);
-
-  // =========================
-  // Web Table Rows
-  // =========================
+  // =====================================
+  // WEB TABLE
+  // =====================================
 
   const rows = page.locator('.table-display tr');
 
@@ -169,27 +174,30 @@ test('Rahul Shetty Practice Page', async ({ page }) => {
     await rows.count()
   );
 
-  // =========================
-  // iFrame Handling
-  // =========================
+  // =====================================
+  // IFRAME HANDLING
+  // =====================================
 
   const framePage = page.frameLocator('#courses-iframe');
 
-  await framePage
-    .locator('a[href*="lifetime-access"]')
-    .first()
+  // Wait iframe visible
+  await page.locator('#courses-iframe')
     .waitFor({
-      state: 'visible'
+      state: 'visible',
+      timeout: 30000
     });
 
+  // Click visible Courses link
   await framePage
-    .locator('a[href*="lifetime-access"]')
+    .getByRole('link', { name: 'Courses' })
     .first()
-    .click();
+    .click({
+      force: true
+    });
 
-  // =========================
-  // Assertions
-  // =========================
+  // =====================================
+  // ASSERTIONS
+  // =====================================
 
   await expect(
     page.locator('#checkBoxOption1')
@@ -199,7 +207,6 @@ test('Rahul Shetty Practice Page', async ({ page }) => {
     page.locator('#dropdown-class-example')
   ).toHaveValue('option2');
 
-  // Pause for visibility
   await page.waitForTimeout(3000);
 
 });
