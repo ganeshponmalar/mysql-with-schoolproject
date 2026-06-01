@@ -25,3 +25,6 @@ test('test', async ({ page }) => {
   await page.getByRole('button', { name: 'Proceed' }).click();
   await page.goto('https://rahulshettyacademy.com/seleniumPractise/#/');
 });
+
+
+

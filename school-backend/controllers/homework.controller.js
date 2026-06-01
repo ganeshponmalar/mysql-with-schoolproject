@@ -30,6 +30,7 @@ const createHomework = async (req, res, next) => {
             message: "Homework assigned successfully",
             homeworkId: result.insertId
         });
+
     } catch (error) {
         console.error("createHomework error:", error);
         next(error);
@@ -54,6 +55,7 @@ const getClassHomework = async (req, res, next) => {
         next(error);
     }
 };
+
 
 // @desc    Update homework
 // @route   PUT /api/homework/:id

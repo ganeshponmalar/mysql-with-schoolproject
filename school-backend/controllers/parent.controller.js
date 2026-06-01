@@ -18,6 +18,7 @@ const getChildren = async (req, res, next) => {
     }
 };
 
+
 const getChildProfile = async (req, res, next) => {
     try {
         const studentId = req.params.id;

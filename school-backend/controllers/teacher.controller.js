@@ -17,6 +17,15 @@ const createTeacherController = errorHandler(async (req, res, next) => {
         return next(new ErrorHandler("Please provide all required fields", 400));
     }
 
+    const [existingTeacher] = await db.execute(
+        `SELECT id FROM teachers WHERE teacherId = ?`,
+        [teacherId]
+    );
+
+    if (existingTeacher.length > 0) {
+        return next(new ErrorHandler("A teacher with this Teacher ID already exists", 409));
+    }
+
     const query = `
         INSERT INTO teachers
         (teacherId, teacherName, subject, department, qualification, user_id)
@@ -49,7 +58,8 @@ const getAllTeacherController = errorHandler(async (req, res, next) => {
             teacherName,
             subject,
             department,
-            qualification
+            qualification,
+            user_id
         FROM teachers
     `;
 
@@ -77,7 +87,8 @@ const getSingleTeacher = errorHandler(async (req, res, next) => {
             teacherName,
             subject,
             department,
-            qualification
+            qualification,
+            user_id
         FROM teachers
         WHERE id = ?
     `;
@@ -107,6 +118,15 @@ const updateTeacherController = errorHandler(async (req, res, next) => {
         qualification,
         user_id
     } = req.body;
+
+    const [existingTeacher] = await db.execute(
+        `SELECT id FROM teachers WHERE teacherId = ? AND id != ?`,
+        [teacherId, id]
+    );
+
+    if (existingTeacher.length > 0) {
+        return next(new ErrorHandler("A teacher with this Teacher ID already exists", 409));
+    }
 
     const query = `
         UPDATE teachers

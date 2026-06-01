@@ -41,6 +41,7 @@ CREATE TABLE IF NOT EXISTS teachers (
    phone VARCHAR(20) DEFAULT 'Not Provided',
    email VARCHAR(100) DEFAULT NULL,
    address TEXT DEFAULT NULL,
+   UNIQUE KEY unique_teacher_id (teacherId),
    FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 

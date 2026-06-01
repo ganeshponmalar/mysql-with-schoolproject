@@ -31,6 +31,7 @@ CREATE TABLE IF NOT EXISTS teachers (
    user_id INT,
    department VARCHAR(100),
    qualification VARCHAR(100),
+   UNIQUE KEY unique_teacher_id (teacherId),
    FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
