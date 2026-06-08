@@ -1,212 +1,63 @@
-import { test, expect } from '@playwright/test';
+import { test } from "../tests/fixtures/practiceFixture.js";
+import { practiceData } from '../tests/utils/testData.js';
 
 test.setTimeout(120000);
 
-test('Rahul Shetty Practice Page', async ({ page }) => {
+test(
+  'Rahul Shetty Practice Page',
+  async ({ practicePage }) => {
 
-  // =====================================
-  // OPEN WEBSITE
-  // =====================================
+    await practicePage.navigate();
 
-  await page.goto(
-    'https://rahulshettyacademy.com/AutomationPractice/#top',
-    {
-      waitUntil: 'domcontentloaded',
-      timeout: 60000
-    }
-  );
+    // Radio Buttons
+    await practicePage.selectRadioButton('radio1');
+    await practicePage.selectRadioButton('radio2');
+    await practicePage.selectRadioButton('radio3');
 
-  // =====================================
-  // RADIO BUTTONS
-  // =====================================
-
-  await page.locator('#radio-btn-example input[value="radio1"]')
-    .check();
-
-  await page.locator('#radio-btn-example input[value="radio2"]')
-    .check();
-
-  await page.locator('#radio-btn-example input[value="radio3"]')
-    .check();
-
-  // =====================================
-  // AUTO SUGGESTION
-  // =====================================
-
-  await page.locator('#autocomplete')
-    .fill('Ind');
-
-  await page.locator('.ui-menu-item div')
-    .filter({ hasText: 'India' })
-    .first()
-    .click();
-
-  // =====================================
-  // STATIC DROPDOWN
-  // =====================================
-
-  await page.locator('#dropdown-class-example')
-    .selectOption('option2');
-
-  // =====================================
-  // CHECKBOXES
-  // =====================================
-
-  await page.locator('#checkBoxOption1').check();
-
-  await page.locator('#checkBoxOption2').check();
-
-  await page.locator('#checkBoxOption3').check();
-
-  await page.locator('#checkBoxOption3').uncheck();
-
-  // =====================================
-  // OPEN WINDOW
-  // =====================================
-
-  const [popup1] = await Promise.all([
-    page.context().waitForEvent('page'),
-    page.locator('#openwindow').click()
-  ]);
-
-  await popup1.waitForLoadState('domcontentloaded');
-
-  console.log(
-    'Popup Window Title:',
-    await popup1.title()
-  );
-
-  await popup1.close();
-
-  // =====================================
-  // OPEN TAB
-  // =====================================
-
-  const [popup2] = await Promise.all([
-    page.context().waitForEvent('page'),
-    page.locator('#opentab').click()
-  ]);
-
-  await popup2.waitForLoadState('domcontentloaded');
-
-  console.log(
-    'Open Tab Title:',
-    await popup2.title()
-  );
-
-  await popup2.close();
-
-  // =====================================
-  // BACK TO MAIN PAGE
-  // =====================================
-
-  await page.bringToFront();
-
-  // =====================================
-  // HIDE / SHOW TEXTBOX
-  // =====================================
-
-  await page.locator('#hide-textbox')
-    .click();
-
-  await page.waitForTimeout(1000);
-
-  await page.locator('#show-textbox')
-    .click({
-      force: true
-    });
-
-  // =====================================
-  // MOUSE HOVER
-  // =====================================
-
-  await page.locator('#mousehover')
-    .hover();
-
-  await page.locator('.mouse-hover-content a')
-    .filter({ hasText: 'Top' })
-    .click();
-
-  // =====================================
-  // ALERT POPUP
-  // =====================================
-
-  page.once('dialog', async dialog => {
-
-    console.log(
-      'Alert Message:',
-      dialog.message()
+    // Auto Suggestion
+    await practicePage.selectCountry(
+      practiceData.country,
+      practiceData.countryOption
     );
 
-    await dialog.accept();
-
-  });
-
-  await page.locator('#alertbtn')
-    .click();
-
-  // =====================================
-  // CONFIRM POPUP
-  // =====================================
-
-  page.once('dialog', async dialog => {
-
-    console.log(
-      'Confirm Message:',
-      dialog.message()
+    // Dropdown
+    await practicePage.selectDropdown(
+      practiceData.dropdownValue
     );
 
-    await dialog.dismiss();
+    // Checkboxes
+    await practicePage.selectAllCheckboxes();
+    await practicePage.uncheckCheckbox3();
 
-  });
+    // Window
+    await practicePage.openWindow();
 
-  await page.locator('#confirmbtn')
-    .click();
+    // Tab
+    await practicePage.openTab();
 
-  // =====================================
-  // WEB TABLE
-  // =====================================
+    // Hide / Show
+    await practicePage.hideAndShowTextbox();
 
-  const rows = page.locator('.table-display tr');
+    // Mouse Hover
+    await practicePage.mouseHoverTop();
 
-  console.log(
-    'Row Count:',
-    await rows.count()
-  );
+    // Alert
+    await practicePage.handleAlert();
 
-  // =====================================
-  // IFRAME HANDLING
-  // =====================================
+    // Confirm
+    await practicePage.handleConfirm();
 
-  const framePage = page.frameLocator('#courses-iframe');
+    // Table
+    await practicePage.printTableRows();
 
-  // Wait iframe visible
-  await page.locator('#courses-iframe')
-    .waitFor({
-      state: 'visible',
-      timeout: 30000
-    });
+    // Iframe
+    await practicePage.handleIframe();
 
-  // Click visible Courses link
-  await framePage
-    .getByRole('link', { name: 'Courses' })
-    .first()
-    .click({
-      force: true
-    });
+    // Assertions
+    await practicePage.verifyCheckbox1Checked();
 
-  // =====================================
-  // ASSERTIONS
-  // =====================================
-
-  await expect(
-    page.locator('#checkBoxOption1')
-  ).toBeChecked();
-
-  await expect(
-    page.locator('#dropdown-class-example')
-  ).toHaveValue('option2');
-
-  await page.waitForTimeout(3000);
-
-});
+    await practicePage.verifyDropdownValue(
+      practiceData.dropdownValue
+    );
+  }
+);

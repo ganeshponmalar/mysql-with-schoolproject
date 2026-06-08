@@ -1,98 +1,66 @@
 import { test, expect } from '@playwright/test';
+import { TodoPage } from "../tests/pages/todoPage.js"
+import { todoItems } from '../tests/utils/testData.js';
 
 test('TodoMVC Test', async ({ page }) => {
-  // Open TodoMVC application
-  await page.goto('https://todomvc.com/examples/react/dist/');
 
-  // Add first todo
-  await page.getByTestId('text-input').fill('Go for walk');
-  await page.getByTestId('text-input').press('Enter');
+  const todoPage = new TodoPage(page);
 
-  // Add second todo
-  await page.getByTestId('text-input').fill('Rest for five minutes');
-  await page.getByTestId('text-input').press('Enter');
+  await todoPage.navigate();
 
-  // Add third todo
-  await page.getByTestId('text-input').fill('keep learning');
-  await page.getByTestId('text-input').press('Enter');
+  await todoPage.addTodo('Go for walk');
+  await todoPage.addTodo('Rest for five minutes');
+  await todoPage.addTodo('keep learning');
+  await todoPage.addTodo(
+    'keep practices is best option for success'
+  );
 
-  // Add fourth todo
-  await page
-    .getByTestId('text-input')
-    .fill('keep practices is best option for success');
-  await page.getByTestId('text-input').press('Enter');
+  await todoPage.completeTodo('Go for walk');
+  await todoPage.completeTodo('keep learning');
 
-  // Mark "Go for walk" as completed
-  await page
-    .getByRole('listitem')
-    .filter({ hasText: 'Go for walk' })
-    .getByTestId('todo-item-toggle')
-    .check();
+  await todoPage.uncheckTodo('keep learning');
 
-  // Mark "keep learning" as completed
-  await page
-    .getByRole('listitem')
-    .filter({ hasText: 'keep learning' })
-    .getByTestId('todo-item-toggle')
-    .check();
+  await todoPage.completeTodo('Rest for five minutes');
 
-  // Uncheck "keep learning"
-  await page
-    .getByRole('listitem')
-    .filter({ hasText: 'keep learning' })
-    .getByTestId('todo-item-toggle')
-    .uncheck();
+  await todoPage.clickActive();
 
-  // Mark "Rest for five minutes" as completed
-  await page
-    .getByRole('listitem')
-    .filter({ hasText: 'Rest for five minutes' })
-    .getByTestId('todo-item-toggle')
-    .check();
+  await todoPage.clickCompleted();
 
-  // Click Active filter
-  await page.getByRole('link', { name: 'Active' }).click();
+  await todoPage.clickActive();
 
-  // Click Completed filter
-  await page.getByRole('link', { name: 'Completed' }).click();
-
-  // Click Active filter again
-  await page.getByRole('link', { name: 'Active' }).click();
-
-  // Verify active todo is visible
   await expect(
-    page.getByText('keep practices is best option for success')
+    page.getByText(
+      'keep practices is best option for success'
+    )
   ).toBeVisible();
 
-  // Verify "Clear completed" button is visible
   await expect(
-    page.getByRole('button', { name: 'Clear completed' })
+    todoPage.clearCompletedBtn
   ).toBeVisible();
 
-  // Click All filter
-  await page.getByRole('link', { name: 'All' }).click();
+  await todoPage.clickAll();
 
-  // Uncheck completed todos
-  await page
-    .getByRole('listitem')
-    .filter({ hasText: 'Go for walk' })
-    .getByTestId('todo-item-toggle')
-    .uncheck();
+  await todoPage.uncheckTodo('Go for walk');
 
-  await page
-    .getByRole('listitem')
-    .filter({ hasText: 'Rest for five minutes' })
-    .getByTestId('todo-item-toggle')
-    .uncheck();
+  await todoPage.uncheckTodo('Rest for five minutes');
 
-  // Click Active filter
-  await page.getByRole('link', { name: 'Active' }).click();
+  await todoPage.clickActive();
 
-  // Verify all tasks are active
-  await expect(page.getByText('Go for walk')).toBeVisible();
-  await expect(page.getByText('Rest for five minutes')).toBeVisible();
-  await expect(page.getByText('keep learning')).toBeVisible();
   await expect(
-    page.getByText('keep practices is best option for success')
+    page.getByText('Go for walk')
+  ).toBeVisible();
+
+  await expect(
+    page.getByText('Rest for five minutes')
+  ).toBeVisible();
+
+  await expect(
+    page.getByText('keep learning')
+  ).toBeVisible();
+
+  await expect(
+    page.getByText(
+      'keep practices is best option for success'
+    )
   ).toBeVisible();
 });
