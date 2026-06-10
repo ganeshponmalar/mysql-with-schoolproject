@@ -1,54 +1,186 @@
 import { test, expect } from '@playwright/test';
 
-test('test', async ({ page }) => {
+test.setTimeout(120000);
 
-  // Open website
+test('Rahul Shetty Practice Page', async ({ page }) => {
+
+  // Open Website
   await page.goto(
-    'https://rahulshettyacademy.com/AutomationPractice/#top',
+    'https://rahulshettyacademy.com/AutomationPractice/',
     {
-      waitUntil: 'domcontentloaded',
+      waitUntil: 'load',
       timeout: 60000
     }
   );
 
-  // Radio buttons
-  await page.locator('label').filter({ hasText: 'Radio1' }).getByRole('radio').check();
-  await page.locator('label').filter({ hasText: 'Radio2' }).getByRole('radio').check();
-  await page.locator('label').filter({ hasText: 'Radio3' }).getByRole('radio').check();
+  // Verify Page Loaded
+  await expect(
+    page.locator('h1')
+  ).toContainText('Practice Page');
 
-  // Textbox
-  await page.getByRole('textbox', {
-    name: 'Type to Select Countries'
-  }).fill('india');
+  // =====================================
+  // RADIO BUTTONS
+  // =====================================
 
-  // Dropdown
-  await page.locator('#dropdown-class-example')
+  await page.locator("input[value='radio1']").check();
+  await expect(
+    page.locator("input[value='radio1']")
+  ).toBeChecked();
+
+  await page.locator("input[value='radio2']").check();
+  await expect(
+    page.locator("input[value='radio2']")
+  ).toBeChecked();
+
+  await page.locator("input[value='radio3']").check();
+  await expect(
+    page.locator("input[value='radio3']")
+  ).toBeChecked();
+
+  // =====================================
+  // AUTO SUGGESTION
+  // =====================================
+
+  await page.locator('#autocomplete').fill('Ind');
+
+  await page
+    .locator('.ui-menu-item div')
+    .filter({ hasText: 'India' })
+    .first()
+    .click();
+
+  // =====================================
+  // STATIC DROPDOWN
+  // =====================================
+
+  await page
+    .locator('#dropdown-class-example')
     .selectOption('option2');
 
-  // Checkboxes
+  await expect(
+    page.locator('#dropdown-class-example')
+  ).toHaveValue('option2');
+
+  // =====================================
+  // CHECKBOXES
+  // =====================================
+
   await page.locator('#checkBoxOption1').check();
   await page.locator('#checkBoxOption2').check();
   await page.locator('#checkBoxOption3').check();
+
+  await expect(
+    page.locator('#checkBoxOption1')
+  ).toBeChecked();
+
+  await expect(
+    page.locator('#checkBoxOption2')
+  ).toBeChecked();
+
+  await expect(
+    page.locator('#checkBoxOption3')
+  ).toBeChecked();
+
   await page.locator('#checkBoxOption3').uncheck();
 
-  // Popup window
-  const [popup1] = await Promise.all([
-    page.waitForEvent('popup'),
-    page.getByRole('button', { name: 'Open Window' }).click()
-  ]);
+  // =====================================
+  // HIDE / SHOW TEXTBOX
+  // =====================================
 
-  await popup1.waitForLoadState();
+  await page.locator('#hide-textbox').click();
 
-  console.log('Popup title:', await popup1.title());
+  await expect(
+    page.locator('#displayed-text')
+  ).toBeHidden();
 
-  // Open tab
-  const [popup2] = await Promise.all([
-    page.waitForEvent('popup'),
-    page.getByRole('link', { name: 'Open Tab' }).click()
-  ]);
+  await page.locator('#show-textbox').click();
 
-  await popup2.waitForLoadState();
+  await expect(
+    page.locator('#displayed-text')
+  ).toBeVisible();
 
-  console.log('Tab title:', await popup2.title());
+  // =====================================
+  // ALERT
+  // =====================================
+
+  page.once('dialog', async dialog => {
+
+    console.log(
+      'Alert Message:',
+      dialog.message()
+    );
+
+    await dialog.accept();
+
+  });
+
+  await page.locator('#alertbtn').click();
+
+  // =====================================
+  // CONFIRM
+  // =====================================
+
+  page.once('dialog', async dialog => {
+
+    console.log(
+      'Confirm Message:',
+      dialog.message()
+    );
+
+    await dialog.dismiss();
+
+  });
+
+  await page.locator('#confirmbtn').click();
+
+  // =====================================
+  // MOUSE HOVER
+  // =====================================
+
+  await page.locator('#mousehover').hover();
+
+  await page
+    .locator('.mouse-hover-content a')
+    .filter({ hasText: 'Top' })
+    .click();
+
+  // =====================================
+  // WEB TABLE
+  // =====================================
+
+  const rows =
+    page.locator('.table-display tr');
+
+  console.log(
+    'Row Count:',
+    await rows.count()
+  );
+
+  expect(await rows.count())
+    .toBeGreaterThan(1);
+
+  // =====================================
+  // IFRAME
+  // =====================================
+
+  const frame =
+    page.frameLocator('#courses-iframe');
+
+  await frame
+    .getByRole('link', { name: 'Courses' })
+    .first()
+    .click();
+
+  // =====================================
+  // FINAL ASSERTIONS
+  // =====================================
+
+  await expect(
+    page.locator('#checkBoxOption1')
+  ).toBeChecked();
+
+  await expect(
+    page.locator('#dropdown-class-example')
+  ).toHaveValue('option2');
 
 });
