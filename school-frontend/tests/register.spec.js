@@ -1,19 +1,23 @@
 import { test, expect } from '@playwright/test';
+import { RegisterPage } from './pages/RegisterPage.js';
 
-test('User should register successfully', async ({ page }) => {
-    await page.goto('http://localhost:5173/register');
+test('User should register successfully',
+async ({ page }) => {
 
-    await page.getByLabel('Full Name').fill('Ganesh');
-    await page.getByLabel('Email Address').fill(`ganesh${Date.now()}@test.com`);
-    await page.getByLabel('Password').fill('password123');
+  const registerPage =
+    new RegisterPage(page);
 
-    await page.getByLabel('Register As').selectOption('teacher');
+  await registerPage.navigate();
 
-    await page.getByRole('button', { name: 'Sign Up' }).click();
+  await registerPage.registerUser({
+    name: 'Ganesh',
+    email: `ganesh${Date.now()}@test.com`,
+    password: 'password123',
+    role: 'teacher'
+  });
 
-    // Wait for redirect to login page
-    await page.waitForURL('**/login', { timeout: 10000 });
+  await page.waitForURL('**/login');
 
-    // Verify login page loaded
-    await expect(page).toHaveURL(/login/);
+  await expect(page).toHaveURL(/login/);
 });
+
