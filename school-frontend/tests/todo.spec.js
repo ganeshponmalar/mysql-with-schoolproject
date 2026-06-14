@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { TodoPage } from "../tests/pages/todoPage.js"
-import { todoItems } from '../tests/utils/testData.js';
+import { todoData } from '../tests/utils/testData.js';
 
 test('TodoMVC Test', async ({ page }) => {
 
